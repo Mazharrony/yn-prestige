@@ -112,16 +112,16 @@ const products = {
     price: 850,
     oldPrice: 1500,
     badge: "LIMITED OFFER",
-    hero: "/assets/product/prestige-yellow.png",
+    hero: "/assets/product/prestige-red.png",
     gallery: [
       "/assets/lifestyle/prestige-lifestyle-1.png",
       "/assets/lifestyle/prestige-lifestyle-2.png",
       "/assets/lifestyle/prestige-lifestyle-3.png"
     ],
     colors: [
-      { label: "হলুদ", value: "হলুদ", image: "/assets/product/prestige-yellow.png" },
-      { label: "লাল", value: "লাল", image: "/assets/product/prestige-red.png" },
-      { label: "সবুজ", value: "সবুজ", image: "/assets/product/prestige-green.png" }
+      { label: "লাল", value: "লাল", image: "/assets/product/prestige-red.png", inStock: true },
+      { label: "হলুদ", value: "হলুদ", image: "/assets/product/prestige-yellow.png", inStock: false },
+      { label: "সবুজ", value: "সবুজ", image: "/assets/product/prestige-green.png", inStock: false }
     ],
     points: [
       "ইলেকট্রিক মাল্টি-কুকার - রান্না হবে ঝামেলাহীন",
@@ -177,7 +177,7 @@ const testimonialData = [
 
 export default function HomePage() {
   const [selectedProduct, setSelectedProduct] = useState("prestige");
-  const [selectedColor, setSelectedColor] = useState("হলুদ");
+  const [selectedColor, setSelectedColor] = useState("লাল");
   const [heroIndex, setHeroIndex] = useState(0);
 
   const [ynGallery, setYnGallery] = useState(products.yn.gallery);
@@ -208,7 +208,8 @@ export default function HomePage() {
 
   function handleProductChange(key) {
     setSelectedProduct(key);
-    setSelectedColor(products[key].colors[0].value);
+    const firstAvailable = products[key].colors.find((c) => c.inStock !== false) || products[key].colors[0];
+    setSelectedColor(firstAvailable.value);
   }
 
   const [submitting, setSubmitting] = useState(false);
@@ -289,7 +290,7 @@ export default function HomePage() {
     formEl.reset();
     setPhone("");
     setSelectedProduct("prestige");
-    setSelectedColor("হলুদ");
+    setSelectedColor("লাল");
     setSubmitting(false);
   }
 
@@ -460,18 +461,25 @@ export default function HomePage() {
               <div className="color-row">
                 <span className="color-label">কালার সিলেক্ট করুন:</span>
                 <div className="color-options">
-                  {activeColors.map((c) => (
-                    <button
-                      type="button"
-                      key={c.value}
-                      className={`color-chip ${
-                        selectedColor === c.value ? "active" : ""
-                      } chip-${c.value}`}
-                      onClick={() => setSelectedColor(c.value)}
-                    >
-                      {c.label}
-                    </button>
-                  ))}
+                  {activeColors.map((c) => {
+                    const outOfStock = c.inStock === false;
+                    return (
+                      <button
+                        type="button"
+                        key={c.value}
+                        className={`color-chip ${
+                          selectedColor === c.value ? "active" : ""
+                        } chip-${c.value} ${outOfStock ? "out-of-stock" : ""}`}
+                        onClick={() => !outOfStock && setSelectedColor(c.value)}
+                        disabled={outOfStock}
+                        aria-disabled={outOfStock}
+                        title={outOfStock ? "স্টক আউট" : c.label}
+                      >
+                        {c.label}
+                        {outOfStock && <span className="stock-tag">স্টক আউট</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -641,8 +649,12 @@ export default function HomePage() {
           </div>
           <div className="color-badges">
             {products.prestige.colors.map((c) => (
-              <span key={c.value} className={`color-chip static chip-${c.value}`}>
+              <span
+                key={c.value}
+                className={`color-chip static chip-${c.value} ${c.inStock === false ? "out-of-stock" : ""}`}
+              >
                 {c.label}
+                {c.inStock === false && <span className="stock-tag">স্টক আউট</span>}
               </span>
             ))}
           </div>
