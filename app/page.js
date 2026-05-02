@@ -201,6 +201,30 @@ export default function HomePage() {
     return () => clearInterval(id);
   }, []);
 
+  // Image protection: block right-click, drag, and common save shortcuts
+  useEffect(() => {
+    const blockContextOnImg = (e) => {
+      if (e.target && e.target.tagName === "IMG") e.preventDefault();
+    };
+    const blockDrag = (e) => {
+      if (e.target && e.target.tagName === "IMG") e.preventDefault();
+    };
+    const blockKeys = (e) => {
+      // Ctrl+S / Ctrl+U / Ctrl+Shift+S
+      if ((e.ctrlKey || e.metaKey) && (e.key === "s" || e.key === "S" || e.key === "u" || e.key === "U")) {
+        e.preventDefault();
+      }
+    };
+    document.addEventListener("contextmenu", blockContextOnImg);
+    document.addEventListener("dragstart", blockDrag);
+    document.addEventListener("keydown", blockKeys);
+    return () => {
+      document.removeEventListener("contextmenu", blockContextOnImg);
+      document.removeEventListener("dragstart", blockDrag);
+      document.removeEventListener("keydown", blockKeys);
+    };
+  }, []);
+
   const active = products[selectedProduct];
   const activeColors = active.colors;
   const previewImage =
@@ -297,6 +321,10 @@ export default function HomePage() {
       quantity: order.quantity,
       phone: formatBdPhone(cleanPhone),
       price: productPrice,
+      subtotal,
+      deliveryCharge,
+      grandTotal,
+      area: order.area,
       waUrl,
       emailOk
     });
@@ -834,10 +862,18 @@ export default function HomePage() {
                   </li>
                   {confirmation.price && (
                     <li>
-                      <span>দাম</span>
-                      <strong>৳ {confirmation.price}</strong>
+                      <span>প্রোডাক্ট দাম</span>
+                      <strong>৳ {confirmation.subtotal}</strong>
                     </li>
                   )}
+                  <li>
+                    <span>ডেলিভারি ({confirmation.area})</span>
+                    <strong>৳ {confirmation.deliveryCharge}</strong>
+                  </li>
+                  <li className="total-row">
+                    <span>মোট দিতে হবে</span>
+                    <strong>৳ {confirmation.grandTotal}</strong>
+                  </li>
                   <li>
                     <span>মোবাইল</span>
                     <strong>{confirmation.phone}</strong>
