@@ -542,7 +542,7 @@ export default function HomePage() {
             <label>
               ডেলিভারি এরিয়া
               <select name="area" defaultValue="ঢাকার ভিতরে">
-                <option value="ঢাকার ভিতরে">ঢাকার ভিতরে (৬০৳)</option>
+                <option value="ঢাকার ভিতরে">ঢাকার ভিতরে (৭০৳)</option>
                 <option value="ঢাকার বাইরে">ঢাকার বাইরে (১২০৳)</option>
               </select>
             </label>
