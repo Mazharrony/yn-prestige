@@ -26,7 +26,13 @@ export const metadata = {
     icon: "/logo.svg"
   }
 };
-
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#d44b66",
+  viewportFit: "cover"
+};
 export default function RootLayout({ children }) {
   return (
     <html lang="bn" className={liShadhinata.variable}>
