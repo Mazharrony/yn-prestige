@@ -225,21 +225,34 @@ export default function HomePage() {
     const productPrice = products[order.product]?.price;
     const cleanPhone = (order.phone || "").replace(/\D/g, "");
 
+    const qty = parseInt(order.quantity, 10) || 1;
+    const totalPrice = productPrice ? productPrice * qty : 0;
+    const prettyPhone = formatBdPhone(cleanPhone);
+
     const payload = {
-      _subject: `New Order - ${productName} (${order.name})`,
+      _subject: `🛒 নতুন অর্ডার - ${productName} | ৳${totalPrice} | ${order.name}`,
       _cc: "azimrupok109@gmail.com",
       _template: "table",
       _captcha: "false",
       _replyto: cleanPhone,
-      Name: order.name,
-      Phone: cleanPhone,
-      Address: order.address,
-      Product: productName,
-      Color: order.color,
-      Quantity: order.quantity,
-      Area: order.area,
-      Price: productPrice ? `BDT ${productPrice}` : "",
-      Submitted_At: new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })
+      "🛍️ প্রোডাক্ট": productName,
+      "🎨 কালার": order.color,
+      "🔢 পরিমাণ": `${qty} পিস`,
+      "💰 মোট দাম": `৳ ${totalPrice} (প্রতি পিস ৳${productPrice})`,
+      "👤 কাস্টমারের নাম": order.name,
+      "📞 ফোন নম্বর": prettyPhone,
+      "📍 এলাকা": order.area,
+      "🏠 ডেলিভারি ঠিকানা": order.address,
+      "🕐 অর্ডার সময়": new Date().toLocaleString("en-GB", {
+        timeZone: "Asia/Dhaka",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      }) + " (BD)",
+      "🌐 সোর্স": "yn-prestige.vercel.app"
     };
 
     // WhatsApp fallback message (most reliable delivery for BD)
